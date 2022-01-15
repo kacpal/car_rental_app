@@ -1,89 +1,113 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://thymeleaf.org">
+    xmlns:th="http://thymeleaf.org"
+    xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <meta charset="UTF-8">
     <title>Car Rental</title>
 </head>
-
+<nav class="navbar navbar-expand-sm navbar-light bg-light main-nav">
+    <div class="container">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Strona główna</a>
+            </li>
+        </ul>
+        <div sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="POST">
+                <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
+            </form>
+        </div>
+        <div sec:authorize="isAnonymous()">
+            <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
+        </div>
+    </div>
+</nav>
 <body>
     <div align="center">
 <!--        Site title-->
-        <h1>Car Rental</h1>
+        <div class="px-4 py-5 my-5 text-center">
+            <h1 class="display-5 fw-bold">Wypożyczalnia samochodów McQueen</h1>
+            <div class="col-lg-6 mx-auto">
+                <p class="lead mb-4">Nasza wypożyczalnia działajac nieustannie przez liczne lata stała się prawdziwym liderem na rynku. Oferujemy bardzo szeroką gamę pojazdów osobowych dla różnych luzi o różnych potrzebach. Naszymi znakami rozpoznawczymi są: duża elastyczność oraz bardzo prosta i szybka obsługa. Na co czekasz? Znajdź samochód dla siebie!</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="#car_search_from"><button type="button" class="btn btn-primary btn-lg px-4 gap-3">Wyszukiwarka pojazdów</button><a/>
+                </div>
+            </div>
+        </div>
 
 <!--        Entry to new page-->
         <a href="/new">Enter new sale</a>
 
         <br/><br/>
 
-        <form th:action="@{/}" method="get">
-            <tr>
-                <td>Rok produkcji:</td>
-                <td><input type="text" name="rok_produkcji"></td>
-            </tr>
-            <td>
-                <td>Marka:</td>
-                <select name="nr_marki" id="nrMarki">
-                    <option th:each="marka : ${listMarka}"
-                            th:value="${marka.id}"
-                            th:text="${marka.nazwa}">
-                    </option>
-                </select>
-            </td>
-            <td>
-                <td>Model</td>
-                <select name="nr_modelu" id="nrModelu">
-                    <option th:each="model : ${listModel}"
-                            th:value="${model.id}"
-                            th:text="${model.nazwa}">
-                    </option>
-                </select>
-            </td>
-            <tr>
-                <td>Ilość miejsc:</td>
-                <td><input type="number" name="ilosc_miejsc"></td>
-            </tr>
-            <td>
-            <td>Model</td>
-            <select name="rodzaj_paliwa">
-                <option value="Benzyna">Benzyna</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Elektryczny">Elektryczny</option>
-            </select>
-            </td>
-            <tr>
-                <td colspan="2"><button type="submit">Go</button></td>
-            </tr>
-        </form>
 
-<!--        Sales table-->
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nazwa modelu</th>
-                    <th>Rocznik</th>
-                    <th>Rodzaj paliwa</th>
-                    <th>Ilosc miejscc</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each = "car : ${listCar}">
-                    <td th:text = "${car.id}">ID</td>
-                    <td th:text = "${car.nrModelu.nazwa}">Nazwa modelu</td>
-                    <td th:text = "${car.rokProdukcji}">Rok producji</td>
-                    <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
-                    <td th:text = "${car.iloscMiejsc}">Ilosc miejsc</td>
-                    <td>
-                        <a th:href="@{'/edit/' + ${car.id}}">Edit</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a th:href="@{'/delete/' + ${car.id}}">Delete</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="container">
+            <form th:action="@{/}" method="get" name="car_search_from">
+                <div class="btn-group">
+                    <div class="input-group">
+                        <input type="text" name="rok_produkcji" class="form-control" placeholder="Rok produkcji">
+                    </div>
+                    <select class="form-select p-2" name="nr_marki" id="nrMarki">
+                        <option selected value="">Marka</option>
+                        <option th:each="marka : ${listMarka}"
+                                th:value="${marka.id}"
+                                th:text="${marka.nazwa}">
+                        </option>
+                    </select>
+                    <select class="form-select" name="nr_modelu" id="nrModelu">
+                        <option selected value="">Model</option>
+                        <option th:each="model : ${listModel}"
+                                th:value="${model.id}"
+                                th:text="${model.nazwa}">
+                        </option>
+                    </select>
+                    <div class="input-group">
+                        <input type="text" name="ilosc_miejsc" class="form-control" placeholder="Ilość miejsc">
+                    </div>
+                    <select class="form-select" name="rodzaj_paliwa">
+                        <option selected value="">Rodzaj paliwa</option>
+                        <option value="Benzyna">Benzyna</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Elektryczny">Elektryczny</option>
+                    </select>
+                    <input class="btn btn-primary" type="submit" value="Szukaj">
+                </div>
+            </form>
+        </div>
+
+        <div class="container mt-5">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Marka</th>
+                        <th>Model</th>
+                        <th>Rok produkcji</th>
+                        <th>Ilość miejsc</th>
+                        <th>Rodzaj paliwa</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each = "car : ${listCar}">
+                        <td th:text = "${car.id}">ID</td>
+                        <td th:text = "${car.nrModelu.nrMarki.nazwa}">Marka</td>
+                        <td th:text = "${car.nrModelu.nazwa}">Model</td>
+                        <td th:text = "${car.rokProdukcji}">Rok produkcji</td>
+                        <td th:text = "${car.iloscMiejsc}">Ilość miejsc</td>
+                        <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
+                        <td>
+                            <a th:href="@{'/edit/' + ${car.id}}">Edit</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a th:href="@{'/delete/' + ${car.id}}">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
