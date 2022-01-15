@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.xml.namespace.QName;
+import java.net.Authenticator;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class AppController implements WebMvcConfigurer {
         registry.addViewController("/index").setViewName("index");
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/logout").setViewName("logout");
+
     }
 
     @Autowired
@@ -71,7 +74,7 @@ public class AppController implements WebMvcConfigurer {
             List<Pojazdy> list = pojazdyRepository.findPojazdyByIloscMiejsc(ilosc_miejsc);
             pojazdyList.retainAll(list);
         }
-        if (rodzaj_paliwa != null) {
+        if (rodzaj_paliwa != "") {
             List<Pojazdy> list = pojazdyRepository.findPojazdyByRodzajPaliwa(rodzaj_paliwa);
             pojazdyList.retainAll(list);
         }
@@ -97,17 +100,17 @@ public class AppController implements WebMvcConfigurer {
     }
 
     @RequestMapping("/edit/{id}")
-    public ModelAndView showEditForm(@PathVariable(name = "id") int id) {
+    public ModelAndView showEditForm(@PathVariable(name = "id") long id) {
         ModelAndView mav = new ModelAndView("edit_form");
-        Sale sale = dao.get(id);
-        mav.addObject("sale", sale);
+        Optional<Pojazdy> pojazd = pojazdyRepository.findById(id);
+        mav.addObject("pojazd", pojazd);
 
         return mav;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@ModelAttribute("sale") Sale sale) {
-        dao.update(sale);
+    public String update(@ModelAttribute("pojazd") Pojazdy pojazd) {
+        pojazdyRepository.update(pojazd.getId(), pojazd.getRokProdukcji(), pojazd.getRodzajPaliwa(), pojazd.getIloscMiejsc());
 
         return "redirect:/";
     }
