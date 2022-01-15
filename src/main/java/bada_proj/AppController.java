@@ -97,17 +97,17 @@ public class AppController implements WebMvcConfigurer {
     }
 
     @RequestMapping("/edit/{id}")
-    public ModelAndView showEditForm(@PathVariable(name = "id") int id) {
+    public ModelAndView showEditForm(@PathVariable(name = "id") long id) {
         ModelAndView mav = new ModelAndView("edit_form");
-        Sale sale = dao.get(id);
-        mav.addObject("sale", sale);
+        Optional<Pojazdy> pojazd = pojazdyRepository.findById(id);
+        mav.addObject("pojazd", pojazd);
 
         return mav;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@ModelAttribute("sale") Sale sale) {
-        dao.update(sale);
+    public String update(@ModelAttribute("pojazd") Pojazdy pojazd) {
+        pojazdyRepository.update(pojazd.getId(), pojazd.getRokProdukcji(), pojazd.getRodzajPaliwa(), pojazd.getIloscMiejsc());
 
         return "redirect:/";
     }

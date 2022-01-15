@@ -6,32 +6,32 @@
     <title>Edit</title>
 </head>
 <body>
-    <div align="center">
-        <h1>Edit Sale</h1>
-        <br/>
-        <form action="#" th:action="@{/update}" th:object="${sale}" method="post">
-            <table border="1" cellpadding="10">
-                <tr>
-                    <td>ID:</td>
-                    <td><input type="text" th:field="*{id}" readonly="readonly"></td>
-                </tr>
-                <tr>
-                    <td>Item name:</td>
-                    <td><input type="text" th:field="*{item}"></td>
-                </tr>
-                <tr>
-                    <td>Quantity:</td>
-                    <td><input type="text" th:field="*{quantity}"></td>
-                </tr>
-                <tr>
-                    <td>Amount:</td>
-                    <td><input type="text" th:field="*{amount}"></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button type="submit">Save</button></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+<div align="center">
+    <h1>Edit record</h1>
+    <br/>
+    <form action="#" th:action="@{/update}" th:object="${pojazd}" method="post">
+        <table border="1" cellpadding="10">
+            <tr>
+                <td>Rok produkcji:</td>
+                <td><input type="text" th:field="*{id}"></td>
+            </tr>
+            <tr>
+                <td>Rok produkcji:</td>
+                <td><input type="text" th:field="*{rokProdukcji}"></td>
+            </tr>
+            <tr>
+                <td>Rodzaj paliwa:</td>
+                <td><input type="text" th:field="*{rodzajPaliwa}"></td>
+            </tr>
+            <tr>
+                <td>Ilość miejsc:</td>
+                <td><input type="text" th:field="*{iloscMiejsc}"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit">Save</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
 </body>
 </html>

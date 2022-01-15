@@ -61,18 +61,20 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Amount</th>
+                    <th>Nazwa modelu</th>
+                    <th>Rocznik</th>
+                    <th>Rodzaj paliwa</th>
+                    <th>Ilosc miejscc</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each = "car : ${listCar}">
                     <td th:text = "${car.id}">ID</td>
-                    <td th:text = "${car.nrModelu.nazwa}">Item Name</td>
-                    <td th:text = "${car.rokProdukcji}">Quantity</td>
-                    <td th:text = "${car.rodzajPaliwa}">Amount</td>
+                    <td th:text = "${car.nrModelu.nazwa}">Nazwa modelu</td>
+                    <td th:text = "${car.rokProdukcji}">Rok producji</td>
+                    <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
+                    <td th:text = "${car.iloscMiejsc}">Ilosc miejsc</td>
                     <td>
                         <a th:href="@{'/edit/' + ${car.id}}">Edit</a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -85,7 +87,7 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-            var listModel = /*[[${listModel}]]*/;
+            var listModel /*= [[${listModel}]]*/;
         /*]]>*/
 
         document.getElementById('nrMarki').addEventListener('click', function() {
