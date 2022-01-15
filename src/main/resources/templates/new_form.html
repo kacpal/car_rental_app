@@ -10,19 +10,41 @@
         <h1>Enter new sale</h1>
 
         </br>
-        <form action="#" th:action="@{/save}" th:object="${sale}" method="post">
+        <form action="#" th:action="@{/save}" th:object="${pojazd}" method="post">
             <table border="1" cellpadding="10">
                 <tr>
-                    <td>Item Name:</td>
-                    <td><input type="text" th:field="*{item}"></td>
+                    <td>Model:</td>
+                    <td>
+                        <select th:field="*{nrModelu}">
+                            <option th:each="model : ${listModele}"
+                                    th:value="${model.id}"
+                                    th:text="${model.nazwa}">
+                            </option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
-                    <td>Quantity:</td>
-                    <td><input type="text" th:field="*{quantity}"></td>
+                    <td>Rok produkcji:</td>
+                    <td><input type="text" th:field="*{rokProdukcji}"></td>
                 </tr>
                 <tr>
-                    <td>Amount:</td>
-                    <td><input type="text" th:field="*{amount}"></td>
+                    <td>Rodzaj paliwa:</td>
+                    <td><input type="text" th:field="*{rodzajPaliwa}"></td>
+                </tr>
+                <tr>
+                    <td>Ilość miejsc:</td>
+                    <td><input type="text" th:field="*{iloscMiejsc}"></td>
+                </tr>
+                <tr>
+                    <td>Wypozyczalnia:</td>
+                    <td>
+                        <select th:field="*{nrWypozyczalni}">
+                            <option th:each="wypozyczalnia : ${wypozyczalnia}"
+                                    th:value="${wypozyczalnia.id}"
+                                    th:text="${wypozyczalnia.nazwa}">
+                            </option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2"><button type="submit">Save</button></td>
