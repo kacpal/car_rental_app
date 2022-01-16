@@ -15,6 +15,6 @@ public interface KlienciRepository extends CrudRepository<Klienci, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Klienci SET imie= :imie, nazwisko= :nazwisko WHERE id = :id")
-    int update(@Param("id") long id, @Param("imie") String imie, @Param("nazwisko") String nazwisko);
+    @Query("UPDATE Klienci SET nrDokumentuTozsamosci= :nrDokumentuTozsamosci, nrPrawaJazdy= :nrPrawaJazdy WHERE id = :id")
+    int update(@Param("id") long id, @Param("nrDokumentuTozsamosci") String nrDokumentuTozsamosci, @Param("nrPrawaJazdy") String nrPrawaJazdy);
 }

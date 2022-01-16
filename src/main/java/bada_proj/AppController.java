@@ -29,6 +29,7 @@ public class AppController implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/logout").setViewName("logout");
         registry.addViewController("/client").setViewName("client");
+        registry.addViewController("/clientsData").setViewName("/clientsData");
 
     }
 
@@ -83,6 +84,14 @@ public class AppController implements WebMvcConfigurer {
         return "index";
     }
 
+    @RequestMapping("/admin/clientsData")
+    public String viewHomePage(Model model) {
+        List<Klienci> klienciList = (List<Klienci>) klienciRepository.findAll();
+
+        model.addAttribute("clientList", klienciList);
+        return "clientsData";
+    }
+
     @RequestMapping("/new")
     public String showNewForm(Model model) {
         Pojazdy pojazd = new Pojazdy();
@@ -108,17 +117,27 @@ public class AppController implements WebMvcConfigurer {
         return mav;
     }
 
-    @RequestMapping("/editClient/{id}")
-    public ModelAndView showEditClientForm(@PathVariable(name = "id") long id) {
+    @RequestMapping(value = {"/editClient", "/admin/editClient"})
+    public ModelAndView showEditClientForm(Principal principal) {
         ModelAndView mav = new ModelAndView("edit_form_client");
-        Optional<Klienci> klient = klienciRepository.findById(id);
+        Klienci klient = klienciRepository.findKlienciByNazwaUzytkownika(principal.getName());
+
         mav.addObject("klient", klient);
 
         return mav;
     }
 
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @RequestMapping(value =  "/admin/editClient/{id}")
+    public ModelAndView showEditClientForm(@PathVariable(name = "id") long id) {
+        ModelAndView mav = new ModelAndView("edit_form_client");
+        Optional<Klienci> klient = klienciRepository.findById(id);
+
+        mav.addObject("klient", klient);
+        return mav;
+    }
+
+        @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@ModelAttribute("pojazd") Pojazdy pojazd) {
         pojazdyRepository.update(pojazd.getId(), pojazd.getRokProdukcji(), pojazd.getRodzajPaliwa(), pojazd.getIloscMiejsc());
 
@@ -127,15 +146,21 @@ public class AppController implements WebMvcConfigurer {
 
     @RequestMapping(value = "/updateClient", method = RequestMethod.POST)
     public String update(@ModelAttribute("klient") Klienci klient) {
-        klienciRepository.update(klient.getId(), klient.getImie(), klient.getNazwisko());
+        klienciRepository.update(klient.getId(), klient.getNrDokumentuTozsamosci(), klient.getNrPrawaJazdy());
 
-        return "redirect:/client";
+        return "redirect:/";
     }
-
 
     @RequestMapping("/delete/{id}")
     public String delete(@PathVariable(name = "id") long id) {
         pojazdyRepository.deleteById(id);
+
+        return "redirect:/";
+    }
+
+    @RequestMapping("/admin/deleteClient/{id}")
+    public String deleteClient(@PathVariable(name = "id") long id) {
+        klienciRepository.deleteById(id);
 
         return "redirect:/";
     }
