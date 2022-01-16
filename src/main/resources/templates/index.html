@@ -17,11 +17,13 @@
         </ul>
         <div sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="POST">
+                <a class="btn btn-outline-success my-2 my-sm-0" href="/client">Moje konto</a>
                 <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
             </form>
         </div>
         <div sec:authorize="isAnonymous()">
             <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
+            <a class="btn btn-success my-2 my-sm-0" th:href="@{/register_form}">Zarejestruj się</a>
         </div>
     </div>
 </nav>
@@ -39,7 +41,7 @@
         </div>
 
 <!--        Entry to new page-->
-        <a href="/new">Enter new sale</a>
+        <a href="/new">Wprowadź nowy rekord</a>
 
         <br/><br/>
 

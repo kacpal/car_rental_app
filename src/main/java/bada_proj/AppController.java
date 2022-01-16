@@ -1,15 +1,11 @@
 package bada_proj;
 
-import bada_proj.entities.Marki;
+import bada_proj.entities.Adresy;
+import bada_proj.entities.Klienci;
 import bada_proj.entities.Pojazdy;
-import bada_proj.entities.Wypozyczalnie;
-import bada_proj.repositories.MarkiRepository;
-import bada_proj.repositories.ModeleRepository;
-import bada_proj.repositories.PojazdyRepository;
-import bada_proj.repositories.WypozyczalnieRepository;
-import oracle.sql.DATE;
+import bada_proj.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,13 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.xml.namespace.QName;
-import java.net.Authenticator;
-import java.sql.Date;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +28,9 @@ public class AppController implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/logout").setViewName("logout");
+        registry.addViewController("/client").setViewName("client");
 
     }
-
-    @Autowired
-    private SalesDAO dao;
 
     @Autowired
     private PojazdyRepository pojazdyRepository;
@@ -52,6 +43,15 @@ public class AppController implements WebMvcConfigurer {
 
     @Autowired
     private WypozyczalnieRepository wypozyczalnieRepository;
+
+    @Autowired
+    private KlienciRepository klienciRepository;
+
+    @Autowired
+    private AdresyRepository adresyRepository;
+
+    @Autowired
+    private PocztyRepository pocztyRepository;
 
 
     @RequestMapping("/")
@@ -108,6 +108,16 @@ public class AppController implements WebMvcConfigurer {
         return mav;
     }
 
+    @RequestMapping("/editClient/{id}")
+    public ModelAndView showEditClientForm(@PathVariable(name = "id") long id) {
+        ModelAndView mav = new ModelAndView("edit_form_client");
+        Optional<Klienci> klient = klienciRepository.findById(id);
+        mav.addObject("klient", klient);
+
+        return mav;
+    }
+
+
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(@ModelAttribute("pojazd") Pojazdy pojazd) {
         pojazdyRepository.update(pojazd.getId(), pojazd.getRokProdukcji(), pojazd.getRodzajPaliwa(), pojazd.getIloscMiejsc());
@@ -115,10 +125,63 @@ public class AppController implements WebMvcConfigurer {
         return "redirect:/";
     }
 
+    @RequestMapping(value = "/updateClient", method = RequestMethod.POST)
+    public String update(@ModelAttribute("klient") Klienci klient) {
+        klienciRepository.update(klient.getId(), klient.getImie(), klient.getNazwisko());
+
+        return "redirect:/client";
+    }
+
+
     @RequestMapping("/delete/{id}")
     public String delete(@PathVariable(name = "id") long id) {
         pojazdyRepository.deleteById(id);
 
         return "redirect:/";
     }
+
+    @RequestMapping("/register_form")
+    public String showRegisterForm(Model model) {
+        Klienci klient = new Klienci();
+        model.addAttribute("klient", klient);
+
+        Adresy adres = new Adresy();
+        model.addAttribute("adres", adres);
+
+        model.addAttribute("listAdres", adresyRepository.findAll());
+        model.addAttribute("listPoczta", pocztyRepository.findAll());
+
+        return "register_form";
+    }
+
+    @RequestMapping(value = "/process_register")
+    public String processRegister(@ModelAttribute("klient") Klienci klient, @ModelAttribute("adres") Adresy adres) {
+        adres.setNrPoczty(pocztyRepository.findFirstByIdIsNot((long) -1));
+
+        NoOpPasswordEncoder passwordEncoder = (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+        String encodedPassword = passwordEncoder.encode(klient.getHaslo());
+        klient.setHaslo(encodedPassword);
+        adresyRepository.save(adres);
+        klient.setNrAdresu(adres);
+        klienciRepository.save(klient);
+
+        return "redirect:/";
+    }
+
+    @RequestMapping("/klienci")
+    public String listUsers(Model model) {
+        model.addAttribute("listUsers", klienciRepository.findAll());
+
+        return "users";
+    }
+
+    @RequestMapping("/client")
+    public String getUserId(Principal principal, Model model) {
+        Klienci klient = klienciRepository.findKlienciByNazwaUzytkownika(principal.getName());
+        model.addAttribute("klienciList", klient);
+
+
+        return "client";
+    }
+
 }
