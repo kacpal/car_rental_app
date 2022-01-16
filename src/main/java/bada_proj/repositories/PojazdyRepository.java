@@ -22,6 +22,8 @@ public interface PojazdyRepository extends CrudRepository<Pojazdy, Long> {
 
     List<Pojazdy> findPojazdyByRodzajPaliwa(String rodzaj_paliwa);
 
+    Pojazdy findFirstById(Long id);
+
     @Modifying
     @Transactional
     @Query("UPDATE Pojazdy SET rokProdukcji= :rokProdukcji, rodzajPaliwa= :rodzajPaliwa, iloscMiejsc= :iloscMiejsc WHERE id = :id")
