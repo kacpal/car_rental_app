@@ -1,14 +1,12 @@
 package bada_proj.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "POCZTY")
 public class Poczty {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "NR_POCZTY", nullable = false)
     private Long id;
 
