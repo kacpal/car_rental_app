@@ -4,6 +4,7 @@
     xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <meta charset="UTF-8">
     <title>Car Rental</title>
@@ -96,7 +97,7 @@
                         <th>Rok produkcji</th>
                         <th>Ilość miejsc</th>
                         <th>Rodzaj paliwa</th>
-                        <th>Action</th>
+                        <th>Rezerwacja</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,9 +109,53 @@
                         <td th:text = "${car.iloscMiejsc}">Ilość miejsc</td>
                         <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
                         <td>
-                            <a th:href="@{'/edit/' + ${car.id}}">Edit</a>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a th:href="@{'/delete/' + ${car.id}}">Delete</a>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" th:attrappend="data-bs-target=${car.id}">Wybierz</button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal" role="dialog" th:attrappend="id=${car.id}">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Formularz rezerwacji</h5>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form action="#" id="reservation" th:action="@{/auth/rent}" th:object="${wypozyczenie}" method="post">
+                                                <div class="form-group">
+                                                    <p class="text-center" th:inline = "text">Wybrałeś [[${car.nrModelu.nrMarki.nazwa}]] [[${car.nrModelu.nazwa}]]</p>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Data wynajęcia:</label>
+                                                    <input type="date" class="form-control" th:field="*{dataWypozyczenia}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Data zwrotu:</label>
+                                                    <input type="date" class="form-control" th:filed="*{dataZwrotu}">
+                                                </div>
+                                                <input type="hidden" name="idPojazdu" th:value="${car.id}">
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Zamknij</button>
+                                            <div sec:authorize="hasRole('KLIENT')">
+                                                <button type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
+                                            </div>
+
+                                            <div sec:authorize="hasRole('PRACOWNIK')">
+                                                <button disabled="disabled" type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
+                                                <div class="invalid-feedback d-block row">Tylko klient może dokonać rezerwacji</div>
+                                            </div>
+
+                                            <div sec:authorize="isAnonymous()">
+                                                <button disabled="disabled" type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
+                                                <div class="invalid-feedback d-block">Zaloguj się aby dokonać rezerwacji</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -118,6 +163,7 @@
         </div>
 
     <script th:inline="javascript">
+
         /*<![CDATA[*/
             var listModel /*= [[${listModel}]]*/;
         /*]]>*/

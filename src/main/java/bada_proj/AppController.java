@@ -3,8 +3,11 @@ package bada_proj;
 import bada_proj.entities.Adresy;
 import bada_proj.entities.Klienci;
 import bada_proj.entities.Pojazdy;
+import bada_proj.entities.Wypozyczenia;
 import bada_proj.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,12 +57,16 @@ public class AppController implements WebMvcConfigurer {
     @Autowired
     private PocztyRepository pocztyRepository;
 
+    @Autowired
+    private WypozyczeniaRepository wypozyczeniaRepository;
 
     @RequestMapping("/")
     public String viewHomePage(Model model, Long rok_produkcji, Long nr_modelu,
                                 Long ilosc_miejsc, String rodzaj_paliwa) {
         model.addAttribute("listModel", modeleRepository.findAll());
         model.addAttribute("listMarka", markiRepository.findAll());
+
+        model.addAttribute("wypozyczenie", new Wypozyczenia());
 
         List<Pojazdy> pojazdyList = (List<Pojazdy>) pojazdyRepository.findAll();
         if (rok_produkcji != null) {
@@ -207,6 +214,16 @@ public class AppController implements WebMvcConfigurer {
 
 
         return "client";
+    }
+
+    @RequestMapping("/auth/rent")
+    public String processRent(@ModelAttribute("wypozyczenie") Wypozyczenia wypozyczenie,
+                              @ModelAttribute("idPojazdu") String idPojazdu,
+                              @AuthenticationPrincipal CustomUserDetailsService.CustomUserDetails klient) {
+        wypozyczenie.setNrPojazdu(pojazdyRepository.findFirstById(Long.valueOf(idPojazdu)));
+        wypozyczenie.setIdKlienta(klienciRepository.findKlienciByNazwaUzytkownika(klient.getUsername()));
+        wypozyczeniaRepository.save(wypozyczenie);
+        return "redirect:/";
     }
 
 }
