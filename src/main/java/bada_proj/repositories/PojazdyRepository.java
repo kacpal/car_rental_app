@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,9 @@ public interface PojazdyRepository extends CrudRepository<Pojazdy, Long> {
     List<Pojazdy> findPojazdyByIloscMiejsc(Long ilosc_miejsc);
 
     List<Pojazdy> findPojazdyByRodzajPaliwa(String rodzaj_paliwa);
+
+    @Query(value = "SELECT * FROM Pojazdy WHERE NR_POJAZDU IN (SELECT WYPOZYCZENIA.NR_POJAZDU FROM WYPOZYCZENIA WHERE DATA_ZWROTU < :date) OR NR_POJAZDU NOT IN (SELECT WYPOZYCZENIA.NR_POJAZDU FROM WYPOZYCZENIA)", nativeQuery = true)
+    List<Pojazdy> findAvailableAfter(String date);
 
     Pojazdy findFirstById(Long id);
 

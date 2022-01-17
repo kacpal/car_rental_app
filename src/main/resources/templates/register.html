@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body class="text-center">
+<div class="container text-center">
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Rejestracja nowego użytkownika</h1>
+    </div>
+
+    <div class="row justify-content-center">
+    <form th:action="@{/process_register}" method="post">
+        <div class="row">
+            <div class="col">
+                <label>Nazwa użytkownika:</label>
+                <input type="text" class="form-control" name="nazwaUzytkownika" th:value="${klient.nazwaUzytkownika}" placeholder="Nazwa użytkownika">
+            </div>
+            <div class="col">
+                <label>Hasło:</label>
+                <input type="password" class="form-control" name="haslo" th:value="${klient.haslo}" placeholder="Hasło">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label>Imię:</label>
+                <input type="text" class="form-control" name="imie" th:value="${klient.imie}" placeholder="Imię">
+            </div>
+            <div class="col">
+                <label>Nazwisko:</label>
+                <input type="text" class="form-control" name="nazwisko" th:value="${klient.nazwisko}" placeholder="Naziwsko">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <label>Data urodzenia:</label>
+                <input type="date" th:value="${klient.dataUrodzenia}" name="dataUrodzenia" class="form-control" required minlength="2" maxlength="20" />
+            </div>
+            <div class="col-md-5">
+                <label>Nr. prawa jazdy: </label>
+                    <input type="text" th:value="${klient.nrPrawaJazdy}" class="form-control" name="nrPrawaJazdy" required minlength="2" maxlength="20" />
+            </div>
+            <div class="col-md-5">
+                <label>Nr. dokumentu tożsamości: </label>
+                <input type="text" th:value="${klient.nrDokumentuTozsamosci}" class="form-control" name="nrDokumentuTozsamosci" required minlength="2" maxlength="20" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <label>Miasto:</label>
+                <input type="text" class="form-control" name="miasto" th:value="${adres.miasto}" placeholder="Miasto">
+            </div>
+            <div class="col-md-5">
+                <label>Ulica:</label>
+                <input type="text" class="form-control" name="ulica" th:value="${adres.ulica}" placeholder="Ulica">
+            </div>
+            <div class="col-md-2">
+                <label>Nr. lokalu:</label>
+                <input type="text" class="form-control" name="nrLokalu" th:value="${adres.nrLokalu}" placeholder="Numer lokalu">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary my-5">Zarejestruj się</button>
+    </form>
+    </div>
+</div>
+</body>
+</html>

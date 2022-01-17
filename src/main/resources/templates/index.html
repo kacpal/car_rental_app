@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://thymeleaf.org"
-    xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -15,157 +15,152 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Strona główna</a>
             </li>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/new">Dodaj pojazd</a>
+                </li>
+            </div>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/clients_data">Dane klientów</a>
+                </li>
+            </div>
         </ul>
-        <div sec:authorize="hasAuthority('PRACOWNIK')">
-            <form th:action="@{/logout}" method="POST">
-                <a class="btn btn-success" href="/admin/clientsData">Dane klientów</a>
-                <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
-            </form>
-        </div>
-        <div sec:authorize="hasAuthority('KLIENT')">
-            <form th:action="@{/logout}" method="POST">
-                <a class="btn btn-outline-success my-2 my-sm-0" href="/client">Moje konto</a>
-                <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
-            </form>
-        </div>
-        <div sec:authorize="isAnonymous()">
-            <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
-            <a class="btn btn-success my-2 my-sm-0" th:href="@{/register_form}">Zarejestruj się</a>
-        </div>
+
+        <ul class="navbar-nav navbar-right">
+            <div sec:authorize="hasAuthority('KLIENT')">
+                <a class="btn btn-success my-2 my-sm-0 mx-2" th:href="@{/auth/client}">Moje konto</a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="POST">
+                    <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
+                </form>
+            </div>
+
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
+                <a class="btn btn-success my-2 my-sm-0" th:href="@{/register}">Zarejestruj się</a>
+            </div>
+        </ul>
     </div>
 </nav>
 <body>
-    <div align="center">
-<!--        Site title-->
-        <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-5 fw-bold">Wypożyczalnia samochodów McQueen</h1>
-            <div class="col-lg-6 mx-auto">
-                <p class="lead mb-4">Nasza wypożyczalnia działajac nieustannie przez liczne lata stała się prawdziwym liderem na rynku. Oferujemy bardzo szeroką gamę pojazdów osobowych dla różnych luzi o różnych potrzebach. Naszymi znakami rozpoznawczymi są: duża elastyczność oraz bardzo prosta i szybka obsługa. Na co czekasz? Znajdź samochód dla siebie!</p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <a href="#car_search_from"><button type="button" class="btn btn-primary btn-lg px-4 gap-3">Wyszukiwarka pojazdów</button><a/>
-                </div>
+<div align="center">
+    <!--        Site title-->
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Wypożyczalnia samochodów McQueen</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Nasza wypożyczalnia działajac nieustannie przez liczne lata stała się prawdziwym liderem na rynku. Oferujemy bardzo szeroką gamę pojazdów osobowych dla różnych luzi o różnych potrzebach. Naszymi znakami rozpoznawczymi są: duża elastyczność oraz bardzo prosta i szybka obsługa. Na co czekasz? Znajdź samochód dla siebie!</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="#car_search_from"><button type="button" class="btn btn-primary btn-lg px-4 gap-3">Wyszukiwarka pojazdów</button><a/>
             </div>
         </div>
+    </div>
 
-<!--        Entry to new page-->
-        <a href="/new">Wprowadź nowy rekord</a>
-
-        <br/><br/>
+    <br/><br/>
 
 
-        <div class="container">
-            <form th:action="@{/}" method="get" name="car_search_from">
-                <div class="btn-group">
-                    <div class="input-group">
-                        <input type="text" name="rok_produkcji" class="form-control" placeholder="Rok produkcji">
-                    </div>
-                    <select class="form-select p-2" name="nr_marki" id="nrMarki">
-                        <option selected value="">Marka</option>
-                        <option th:each="marka : ${listMarka}"
-                                th:value="${marka.id}"
-                                th:text="${marka.nazwa}">
-                        </option>
-                    </select>
-                    <select class="form-select" name="nr_modelu" id="nrModelu">
-                        <option selected value="">Model</option>
-                        <option th:each="model : ${listModel}"
-                                th:value="${model.id}"
-                                th:text="${model.nazwa}">
-                        </option>
-                    </select>
-                    <div class="input-group">
-                        <input type="text" name="ilosc_miejsc" class="form-control" placeholder="Ilość miejsc">
-                    </div>
-                    <select class="form-select" name="rodzaj_paliwa">
-                        <option selected value="">Rodzaj paliwa</option>
-                        <option value="Benzyna">Benzyna</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Elektryczny">Elektryczny</option>
-                    </select>
-                    <input class="btn btn-primary" type="submit" value="Szukaj">
+    <div class="container">
+        <form th:action="@{/}" method="get" name="car_search_from">
+            <div class="btn-group">
+                <div class="input-group">
+                    <input type="text" name="rok_produkcji" class="form-control" placeholder="Rok produkcji">
                 </div>
-            </form>
-        </div>
+                <select class="form-select p-2" name="nr_marki" id="nrMarki">
+                    <option selected value=""></option>
+                    <option th:each="marka : ${listMarka}"
+                            th:value="${marka.id}"
+                            th:text="${marka.nazwa}">
+                    <option value="">Dowolna</option>
+                    </option>
+                </select>
+                <select class="form-select" name="nr_modelu" id="nrModelu">
+                    <option selected value=""></option>
+                    <option th:each="model : ${listModel}"
+                            th:value="${model.id}"
+                            th:text="${model.nazwa}">
+                    </option>
+                </select>
+                <div class="input-group">
+                    <input type="text" name="ilosc_miejsc" class="form-control" placeholder="Ilość miejsc">
+                </div>
+                <select class="form-select" name="rodzaj_paliwa">
+                    <option selected value="">Rodzaj paliwa</option>
+                    <option value="Benzyna">Benzyna</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Elektryczny">Elektryczny</option>
+                </select>
+                <input class="btn btn-primary" type="submit" value="Szukaj">
+            </div>
+        </form>
+    </div>
 
-        <div class="container mt-5">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Marka</th>
-                        <th>Model</th>
-                        <th>Rok produkcji</th>
-                        <th>Ilość miejsc</th>
-                        <th>Rodzaj paliwa</th>
-                        <th>Rezerwacja</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each = "car : ${listCar}">
-                        <td th:text = "${car.id}">ID</td>
-                        <td th:text = "${car.nrModelu.nrMarki.nazwa}">Marka</td>
-                        <td th:text = "${car.nrModelu.nazwa}">Model</td>
-                        <td th:text = "${car.rokProdukcji}">Rok produkcji</td>
-                        <td th:text = "${car.iloscMiejsc}">Ilość miejsc</td>
-                        <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
-                        <td>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" th:attrappend="data-bs-target=${car.id}">Wybierz</button>
+    <div class="container mt-5">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Marka</th>
+                <th>Model</th>
+                <th>Rok produkcji</th>
+                <th>Ilość miejsc</th>
+                <th>Rodzaj paliwa</th>
+                <th>Rezerwacja</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each = "car : ${listCar}">
+                <td th:text = "${car.id}">ID</td>
+                <td th:text = "${car.nrModelu.nrMarki.nazwa}">Marka</td>
+                <td th:text = "${car.nrModelu.nazwa}">Model</td>
+                <td th:text = "${car.rokProdukcji}">Rok produkcji</td>
+                <td th:text = "${car.iloscMiejsc}">Ilość miejsc</td>
+                <td th:text = "${car.rodzajPaliwa}">Rodzaj paliwa</td>
+                <td>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" th:attrappend="data-bs-target=${car.id}">Wybierz</button>
 
-                            <!-- Modal -->
-                            <div class="modal fade" id="myModal" role="dialog" th:attrappend="id=${car.id}">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Formularz rezerwacji</h5>
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog" th:attrappend="id=${car.id}">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Formularz rezerwacji</h5>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form action="#" th:attrappend="id=${car.id}" th:action="@{/user/rent}" th:object="${wypozyczenie}" method="post">
+                                        <div class="form-group">
+                                            <p class="text-center" th:inline = "text">Wybrałeś [[${car.nrModelu.nrMarki.nazwa}]] [[${car.nrModelu.nazwa}]]</p>
                                         </div>
-
-                                        <div class="modal-body">
-                                            <form action="#" id="reservation" th:action="@{/auth/rent}" th:object="${wypozyczenie}" method="post">
-                                                <div class="form-group">
-                                                    <p class="text-center" th:inline = "text">Wybrałeś [[${car.nrModelu.nrMarki.nazwa}]] [[${car.nrModelu.nazwa}]]</p>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Data wynajęcia:</label>
-                                                    <input type="date" class="form-control" th:field="*{dataWypozyczenia}">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Data zwrotu:</label>
-                                                    <input type="date" class="form-control" th:filed="*{dataZwrotu}">
-                                                </div>
-                                                <input type="hidden" name="idPojazdu" th:value="${car.id}">
-                                            </form>
+                                        <div class="form-group">
+                                            <label class="col-form-label">Data wynajęcia:</label>
+                                            <input type="date" name="datepicker" id="dataWypozyczenia" min="2000-01-01" class="form-control datepicker" th:field="*{dataWypozyczenia}">
                                         </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Zamknij</button>
-                                            <div sec:authorize="hasRole('KLIENT')">
-                                                <button type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
-                                            </div>
-
-                                            <div sec:authorize="hasRole('PRACOWNIK')">
-                                                <button disabled="disabled" type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
-                                                <div class="invalid-feedback d-block row">Tylko klient może dokonać rezerwacji</div>
-                                            </div>
-
-                                            <div sec:authorize="isAnonymous()">
-                                                <button disabled="disabled" type="submit" form="reservation" class="btn btn-primary">Zarezerwuj</button>
-                                                <div class="invalid-feedback d-block">Zaloguj się aby dokonać rezerwacji</div>
-                                            </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">Data zwrotu:</label>
+                                            <input type="date" name="datepicker" class="form-control datepicker" min="2000-01-01" th:field="*{dataZwrotu}">
                                         </div>
-                                    </div>
+                                        <input type="hidden" name="test" th:value="${car.id}">
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Zamknij</button>
+                                    <button type="submit" th:attrappend="form=${car.id}" class="btn btn-primary">Zarezerwuj</button>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
     <script th:inline="javascript">
-
         /*<![CDATA[*/
-            var listModel /*= [[${listModel}]]*/;
+        var listModel = /*[[${listModel}]]*/;
         /*]]>*/
 
         document.getElementById('nrMarki').addEventListener('click', function() {
@@ -192,10 +187,25 @@
             for (var i = 0; i < data.length; i++) {
                 console.log(data[i]);
                 newSelect.innerHTML +=
-                       ` <option <option value="`+data[i].id+`">`+data[i].nazwa+`</option>`;
+                    ` <option <option value="`+data[i].id+`">`+data[i].nazwa+`</option>`;
             }
             newSelect.innerHTML += `</select>>`;
         }
-
     </script>
+    <script>
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1;
+        var yyyy = today.getFullYear();
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
+        today = yyyy + '-' + mm + '-' + dd;
+        console.log(today)
+        var a = document.getElementsByClassName("form-control datepicker")
+        for (var i = 0; i<a.length; i++) {
+            console.log(a[i])
+            a[i].setAttribute("min", today);
+        }
+    </script>
+</div>
 </body>

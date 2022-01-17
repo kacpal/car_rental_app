@@ -53,4 +53,14 @@ public class Wypozyczenia {
     public void setIdKlienta(Klienci idKlienta) {
         this.idKlienta = idKlienta;
     }
+
+    @Override
+    public String toString() {
+        return "Wypozyczenia{" +
+                "dataZwrotu=" + dataZwrotu +
+                ", idKlienta=" + idKlienta +
+                ", nrPojazdu=" + nrPojazdu +
+                ", dataWypozyczenia=" + dataWypozyczenia +
+                '}';
+    }
 }

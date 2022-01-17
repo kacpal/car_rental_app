@@ -14,13 +14,33 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Strona główna</a>
             </li>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/new">Dodaj pojazd</a>
+                </li>
+            </div>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/clients_data">Dane klientów</a>
+                </li>
+            </div>
         </ul>
-        <div sec:authorize="hasAuthority('PRACOWNIK')">
-            <form th:action="@{/logout}" method="POST">
-                <a class="btn btn-success" href="/admin/clientsData">Dane klientów</a>
-                <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
-            </form>
-        </div>
+
+        <ul class="navbar-nav navbar-right">
+            <div sec:authorize="hasAuthority('KLIENT')">
+                <a class="btn btn-success my-2 my-sm-0 mx-2" th:href="@{/auth/client}">Moje konto</a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="POST">
+                    <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
+                </form>
+            </div>
+
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
+                <a class="btn btn-success my-2 my-sm-0" th:href="@{/register}">Zarejestruj się</a>
+            </div>
+        </ul>
     </div>
 </nav>
 
@@ -55,8 +75,8 @@
                 <td th:text = "${client.nrPrawaJazdy}">Nazwa modelu</td>
                 <td th:text = "${client.nrDokumentuTozsamosci}">Nazwa modelu</td>
                 <td>
-                    <a class="btn btn-primary" th:href="@{'/admin/editClient/' + ${client.id}}" role="button">Edytuj</a>
-                    <a class="btn btn-danger" th:href="@{'/admin/deleteClient/' + ${client.id}}" role="button">Usuń</a>
+                    <a class="btn btn-primary" th:href="@{'/admin/edit_client/' + ${client.id}}" role="button">Edytuj</a>
+                    <a class="btn btn-danger" th:href="@{'/admin/delete_client/' + ${client.id}}" role="button">Usuń</a>
                 </td>
             </tr>
             </tbody>
