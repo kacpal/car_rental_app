@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Car Rental</title>
+</head>
+<nav class="navbar navbar-expand-sm navbar-light bg-light main-nav">
+    <div class="container">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Strona główna</a>
+            </li>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/new">Dodaj pojazd</a>
+                </li>
+            </div>
+            <div sec:authorize="hasAuthority('PRACOWNIK')">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin/clients_data">Dane klientów</a>
+                </li>
+            </div>
+        </ul>
+
+        <ul class="navbar-nav navbar-right">
+            <div sec:authorize="hasAuthority('KLIENT')">
+                <a class="btn btn-success my-2 my-sm-0 mx-2" th:href="@{/auth/client}">Moje konto</a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="POST">
+                    <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Wyloguj się">
+                </form>
+            </div>
+
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Zaloguj się</a>
+                <a class="btn btn-success my-2 my-sm-0" th:href="@{/register}">Zarejestruj się</a>
+            </div>
+        </ul>
+    </div>
+</nav>
+<body>
+<div align="center">
+    <!--        Site title-->
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Wystąpił błąd :(</h1>
+        <div class="col-lg-6 mx-auto">
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="/"><button type="button" class="btn btn-primary btn-lg px-4 gap-3">Powrót na stronę główną</button><a/>
+                    <br/><br/>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+</body>

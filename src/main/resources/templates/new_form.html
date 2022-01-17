@@ -2,55 +2,56 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://thymeleaf.org">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <meta charset="UTF-8">
     <title>Add attribute</title>
 </head>
-<body>
-    <div>
-        <h1>Enter new sale</h1>
 
-        </br>
-        <form action="#" th:action="@{/save}" th:object="${pojazd}" method="post">
-            <table border="1" cellpadding="10">
-                <tr>
-                    <td>Model:</td>
-                    <td>
-                        <select th:field="*{nrModelu}">
-                            <option th:each="model : ${listModele}"
-                                    th:value="${model.id}"
-                                    th:text="${model.nazwa}">
-                            </option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Rok produkcji:</td>
-                    <td><input type="text" th:field="*{rokProdukcji}"></td>
-                </tr>
-                <tr>
-                    <td>Rodzaj paliwa:</td>
-                    <td><input type="text" th:field="*{rodzajPaliwa}"></td>
-                </tr>
-                <tr>
-                    <td>Ilość miejsc:</td>
-                    <td><input type="text" th:field="*{iloscMiejsc}"></td>
-                </tr>
-                <tr>
-                    <td>Wypozyczalnia:</td>
-                    <td>
-                        <select th:field="*{nrWypozyczalni}">
-                            <option th:each="wypozyczalnia : ${wypozyczalnia}"
-                                    th:value="${wypozyczalnia.id}"
-                                    th:text="${wypozyczalnia.nazwa}">
-                            </option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button type="submit">Save</button></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+<body>
+<div align="center">
+
+    </br>
+
+    <form action="#" th:action="@{/admin/save}" th:object="${pojazd}" method="post">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <label for="model" class="form-label">Model:</label>
+                <select class="form-select" id="model" th:field="*{nrModelu}" aria-label="Default select example">
+                    <option th:each="model : ${listModel}"
+                            th:value="${model.id}"
+                            th:text="${model.nazwa}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-7">
+                <label for="exampleInputDokument" class="form-label">Rok produkcji</label>
+                <input type="text" class="form-control" id="exampleInputDokument" th:field="*{rokProdukcji}">
+            </div>
+            <div class="col-md-7">
+                <label for="exampleInputPrawo" class="form-label">Rodzaj paliwa</label>
+                <input type="text" class="form-control" id="exampleInputPrawo" th:field="*{rodzajPaliwa}">
+            </div>
+            <div class="col-md-7">
+                <label for="exampleInputPrawo" class="form-label">Ilość miejsc</label>
+                <input type="text" class="form-control" id="exampleInputPrawo" th:field="*{iloscMiejsc}">
+            </div>
+            <div class="col-md-7">
+                <label for="nr_w" class="form-label">Model:</label>
+                <select class="form-select" id="nr_w" th:field="*{nrWypozyczalni}" aria-label="Default select example">
+                    <option th:each="wypozyczalnia : ${wypozyczalnia}"
+                            th:value="${wypozyczalnia.id}"
+                            th:text="${wypozyczalnia.nazwa}">
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row"></div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 2%">Submit</button>
+    </form>
+</div>
 </body>
 </html>

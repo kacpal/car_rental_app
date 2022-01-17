@@ -5,10 +5,10 @@ import bada_proj.entities.Klienci;
 import bada_proj.entities.Pojazdy;
 import bada_proj.entities.Wypozyczenia;
 import bada_proj.repositories.*;
+import oracle.jdbc.driver.DatabaseError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +20,8 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +34,7 @@ public class AppController implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/logout").setViewName("logout");
         registry.addViewController("/client").setViewName("client");
-        registry.addViewController("/clientsData").setViewName("/clientsData");
+        registry.addViewController("/clients_data").setViewName("clients_data");
 
     }
 
@@ -65,7 +67,6 @@ public class AppController implements WebMvcConfigurer {
                                 Long ilosc_miejsc, String rodzaj_paliwa) {
         model.addAttribute("listModel", modeleRepository.findAll());
         model.addAttribute("listMarka", markiRepository.findAll());
-
         model.addAttribute("wypozyczenie", new Wypozyczenia());
 
         List<Pojazdy> pojazdyList = (List<Pojazdy>) pojazdyRepository.findAll();
@@ -86,36 +87,39 @@ public class AppController implements WebMvcConfigurer {
             List<Pojazdy> list = pojazdyRepository.findPojazdyByRodzajPaliwa(rodzaj_paliwa);
             pojazdyList.retainAll(list);
         }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        List<Pojazdy> list = pojazdyRepository.findAvailableAfter(format.format(new Date()));
+        pojazdyList.retainAll(list);
 
         model.addAttribute("listCar", pojazdyList);
         return "index";
     }
 
-    @RequestMapping("/admin/clientsData")
+    @RequestMapping("/admin/clients_data")
     public String viewHomePage(Model model) {
         List<Klienci> klienciList = (List<Klienci>) klienciRepository.findAll();
 
         model.addAttribute("clientList", klienciList);
-        return "clientsData";
+        return "clients_data";
     }
 
-    @RequestMapping("/new")
+    @RequestMapping("/admin/new")
     public String showNewForm(Model model) {
         Pojazdy pojazd = new Pojazdy();
         model.addAttribute("pojazd", pojazd);
-        model.addAttribute("listModele", modeleRepository.findAll());
-        model.addAttribute("listMarki", markiRepository.findAll());
+        model.addAttribute("listModel", modeleRepository.findAll());
+        model.addAttribute("listMarka", markiRepository.findAll());
         model.addAttribute("wypozyczalnia", wypozyczalnieRepository.findAll());
         return "new_form";
     }
 
-    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/admin/save", method = RequestMethod.POST)
     public String save(@ModelAttribute("pojazd") Pojazdy pojazd) {
         pojazdyRepository.save(pojazd);
         return "redirect:/";
     }
 
-    @RequestMapping("/edit/{id}")
+    @RequestMapping("/admin/edit/{id}")
     public ModelAndView showEditForm(@PathVariable(name = "id") long id) {
         ModelAndView mav = new ModelAndView("edit_form");
         Optional<Pojazdy> pojazd = pojazdyRepository.findById(id);
@@ -124,7 +128,14 @@ public class AppController implements WebMvcConfigurer {
         return mav;
     }
 
-    @RequestMapping(value = {"/editClient", "/admin/editClient"})
+    @RequestMapping("/client/cancel/{id}")
+    public String cancel(@PathVariable(name = "id") Date date) {
+        wypozyczeniaRepository.delete(wypozyczeniaRepository.findFirstByDataWypozyczenia(date));
+
+        return "redirect:/client/";
+    }
+
+    @RequestMapping(value = {"/auth/edit_client"})
     public ModelAndView showEditClientForm(Principal principal) {
         ModelAndView mav = new ModelAndView("edit_form_client");
         Klienci klient = klienciRepository.findKlienciByNazwaUzytkownika(principal.getName());
@@ -135,7 +146,7 @@ public class AppController implements WebMvcConfigurer {
     }
 
 
-    @RequestMapping(value =  "/admin/editClient/{id}")
+    @RequestMapping(value =  "/admin/edit_client/{id}")
     public ModelAndView showEditClientForm(@PathVariable(name = "id") long id) {
         ModelAndView mav = new ModelAndView("edit_form_client");
         Optional<Klienci> klient = klienciRepository.findById(id);
@@ -144,35 +155,40 @@ public class AppController implements WebMvcConfigurer {
         return mav;
     }
 
-        @RequestMapping(value = "/update", method = RequestMethod.POST)
+        @RequestMapping(value = "/admin/update", method = RequestMethod.POST)
     public String update(@ModelAttribute("pojazd") Pojazdy pojazd) {
         pojazdyRepository.update(pojazd.getId(), pojazd.getRokProdukcji(), pojazd.getRodzajPaliwa(), pojazd.getIloscMiejsc());
 
         return "redirect:/";
     }
 
-    @RequestMapping(value = "/updateClient", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/update_client", method = RequestMethod.POST)
     public String update(@ModelAttribute("klient") Klienci klient) {
         klienciRepository.update(klient.getId(), klient.getNrDokumentuTozsamosci(), klient.getNrPrawaJazdy());
 
         return "redirect:/";
     }
 
-    @RequestMapping("/delete/{id}")
+    @RequestMapping("/admin/delete/{id}")
     public String delete(@PathVariable(name = "id") long id) {
         pojazdyRepository.deleteById(id);
 
-        return "redirect:/";
+        return "redirect:/admin/clients_data";
     }
 
-    @RequestMapping("/admin/deleteClient/{id}")
+    @RequestMapping("/admin/delete_client/{id}")
     public String deleteClient(@PathVariable(name = "id") long id) {
         klienciRepository.deleteById(id);
 
         return "redirect:/";
     }
 
-    @RequestMapping("/register_form")
+    @RequestMapping("/logout")
+    public String logout() {
+        return "redirect:/";
+    }
+
+    @RequestMapping("/register")
     public String showRegisterForm(Model model) {
         Klienci klient = new Klienci();
         model.addAttribute("klient", klient);
@@ -183,14 +199,14 @@ public class AppController implements WebMvcConfigurer {
         model.addAttribute("listAdres", adresyRepository.findAll());
         model.addAttribute("listPoczta", pocztyRepository.findAll());
 
-        return "register_form";
+        return "register";
     }
 
     @RequestMapping(value = "/process_register")
     public String processRegister(@ModelAttribute("klient") Klienci klient, @ModelAttribute("adres") Adresy adres) {
         adres.setNrPoczty(pocztyRepository.findFirstByIdIsNot((long) -1));
 
-        NoOpPasswordEncoder passwordEncoder = (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(klient.getHaslo());
         klient.setHaslo(encodedPassword);
         adresyRepository.save(adres);
@@ -207,21 +223,23 @@ public class AppController implements WebMvcConfigurer {
         return "users";
     }
 
-    @RequestMapping("/client")
+    @RequestMapping("/auth/client")
     public String getUserId(Principal principal, Model model) {
         Klienci klient = klienciRepository.findKlienciByNazwaUzytkownika(principal.getName());
         model.addAttribute("klienciList", klient);
 
-
+        List<Wypozyczenia> wypozyczenia = wypozyczeniaRepository.findAllByIdKlienta(klient);
+        model.addAttribute("rentList", wypozyczenia);
         return "client";
     }
 
-    @RequestMapping("/auth/rent")
+    @RequestMapping("/user/rent")
     public String processRent(@ModelAttribute("wypozyczenie") Wypozyczenia wypozyczenie,
-                              @ModelAttribute("idPojazdu") String idPojazdu,
+                              @ModelAttribute("test") String test,
                               @AuthenticationPrincipal CustomUserDetailsService.CustomUserDetails klient) {
-        wypozyczenie.setNrPojazdu(pojazdyRepository.findFirstById(Long.valueOf(idPojazdu)));
+        wypozyczenie.setNrPojazdu(pojazdyRepository.findFirstById(Long.valueOf(test)));
         wypozyczenie.setIdKlienta(klienciRepository.findKlienciByNazwaUzytkownika(klient.getUsername()));
+
         wypozyczeniaRepository.save(wypozyczenie);
         return "redirect:/";
     }
